@@ -593,7 +593,6 @@
   // PASTE YOUR GOOGLE APPS SCRIPT URL HERE (see instructions)
   // ============================================================
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_Nct1UtJKmAVvB6lgfdWeUdpYGoSY-nsCMYQoYWU338EHo0EfbmBnlv15vgzRqIGp/exec";
-  // updated script URL new
   // ============================================================
 
   const totalQuestions = 4;
@@ -703,20 +702,37 @@
       q4_biggest_challenge: getMultiAnswers(4)
     };
 
-    fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(answers)
-    })
-    .then(response => {
+    // Use a hidden form to bypass CORS
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = GOOGLE_SCRIPT_URL;
+    form.target = 'hidden_iframe';
+    form.style.display = 'none';
+
+    // Add each field as a hidden input
+    for (const [key, value] of Object.entries(answers)) {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // Show thank you after a short delay (form is submitting in background)
+    setTimeout(() => {
       goToThanks();
-    })
-    .catch(error => {
-      // If Google Sheets fails, still show thank you — don't punish the user
-      console.error('Submission error:', error);
-      goToThanks();
-    });
+    }, 800);
   }
+
+  // Create hidden iframe for form submission
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_iframe';
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
 </script>
 </body>
 </html>
