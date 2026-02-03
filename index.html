@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Brand Research Questionnaire</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f5f0eb;
+    --card: #fffdf9;
+    --text-primary: #2c2420;
+    --text-secondary: #7a6e65;
+    --accent: #c17f4e;
+    --accent-light: #f0e0d0;
+    --border: #e8ddd4;
+    --selected-bg: #2c2420;
+    --selected-text: #fffdf9;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* Subtle grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Progress bar */
+  .progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    z-index: 50;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Layout */
+  .wrapper {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+    position: relative;
+  }
+
+  /* Intro screen */
+  .intro-screen {
+    text-align: center;
+    padding-top: 40px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .intro-screen .brand-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 48px;
+  }
+  .intro-screen h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 42px;
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+  .intro-screen h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .intro-screen p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+  }
+  .intro-screen .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-light);
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+  .intro-screen .time-badge svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--accent);
+  }
+
+  /* Buttons */
+  .btn-start {
+    display: inline-block;
+    background: var(--text-primary);
+    color: var(--selected-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .btn-start:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  /* Question screens */
+  .question-screen {
+    display: none;
+    animation: fadeUp 0.6s cubic-bezier(.4,0,.2,1) both;
+  }
+  .question-screen.active {
+    display: block;
+  }
+
+  .question-number {
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .question-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+  .question-hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  /* Options */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 17px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: var(--card);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+  }
+  .option:hover {
+    border-color: var(--accent);
+    background: #faf6f1;
+  }
+  .option.selected {
+    background: var(--selected-bg);
+    border-color: var(--selected-bg);
+    color: var(--selected-text);
+  }
+  .option.selected .option-label {
+    color: var(--selected-text);
+  }
+  .option.selected .option-emoji {
+    filter: none;
+  }
+  .option-emoji {
+    font-size: 20px;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .option-label {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 400;
+    transition: color 0.25s;
+  }
+  .option-sublabel {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    transition: color 0.25s;
+  }
+  .option.selected .option-sublabel {
+    color: rgba(255,253,249,0.6);
+  }
+
+  /* Multi-select tag style for Q3 */
+  .options.tags {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .options.tags .option {
+    padding: 10px 18px;
+    border-radius: 30px;
+    justify-content: center;
+  }
+  .options.tags .option-emoji {
+    font-size: 16px;
+    width: auto;
+  }
+  .options.tags .option-label {
+    font-size: 14px;
+  }
+
+  /* "Anything else" option with text input */
+  .option.other-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .option.other-option .other-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+  .other-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    padding: 6px 0;
+    outline: none;
+    transition: border-color 0.25s;
+    display: none;
+  }
+  .other-input:focus {
+    border-bottom-color: var(--accent);
+  }
+  .other-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
+  .option.other-option.selected .other-input {
+    display: block;
+  }
+  .option.other-option.selected .other-input {
+    border-bottom-color: rgba(255,253,249,0.3);
+    color: var(--selected-text);
+  }
+  .option.other-option.selected .other-input::placeholder {
+    color: rgba(255,253,249,0.5);
+  }
+
+  /* Navigation */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 44px;
+  }
+  .btn-back {
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 0;
+    transition: color 0.2s;
+  }
+  .btn-back:hover { color: var(--text-primary); }
+
+  .btn-next {
+    background: var(--text-primary);
+    color: var(--selected-text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s, opacity 0.3s, transform 0.2s;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .btn-next.enabled {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .btn-next.enabled:hover {
+    background: var(--accent);
+    transform: translateY(-1px);
+  }
+  .btn-next.loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .btn-next.loading::after {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,253,249,0.4);
+    border-top-color: #fffdf9;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Thank you screen */
+  .thankyou-screen {
+    display: none;
+    text-align: center;
+    padding-top: 60px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .thankyou-screen.active { display: block; }
+  .thankyou-screen .checkmark {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 36px;
+  }
+  .thankyou-screen .checkmark svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    fill: none;
+  }
+  .thankyou-screen h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 38px;
+    margin-bottom: 16px;
+  }
+  .thankyou-screen p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 380px;
+    margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* Decorative line accent */
+  .deco-line {
+    width: 40px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 28px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .wrapper { padding: 48px 18px 80px; }
+    .intro-screen h1 { font-size: 34px; }
+    .question-text { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="wrapper">
+
+  <!-- ========== INTRO ========== -->
+  <div class="intro-screen" id="introScreen">
+    <h1>Hi <em>Founder!</em></h1>
+    <p>I'm trying to understand what it's really like to build a premium fashion/lifestyle brand as a young woman in India. Help me out?</p>
+    <div class="time-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Takes about 30 seconds
+    </div><br/>
+    <button class="btn-start" onclick="startQuiz()">Let's Go</button>
+  </div>
+
+  <!-- ========== Q1: Business Stage ========== -->
+  <div class="question-screen" id="q1">
+    <div class="question-number">01 / 04</div>
+    <div class="question-text">Where is your business right now?</div>
+    <div class="question-hint">Pick the one that feels closest.</div>
+    <div class="options" id="options1">
+      <div class="option" onclick="select(this, 1)">
+        <span class="option-emoji">🚀</span>
+        <div><div class="option-label">Just launched</div><div class="option-sublabel">Live, but still very early days</div></div>
+      </div>
+      <div class="option" onclick="select(this, 1)">
+        <span class="option-emoji">📦</span>
+        <div><div class="option-label">Generating revenue</div><div class="option-sublabel">Making sales, figuring things out</div></div>
+      </div>
+      <div class="option" onclick="select(this, 1)">
+        <span class="option-emoji">⚖️</span>
+        <div><div class="option-label">Around break-even</div><div class="option-sublabel">Revenue is coming in, costs are close</div></div>
+      </div>
+      <div class="option" onclick="select(this, 1)">
+        <span class="option-emoji">📈</span>
+        <div><div class="option-label">Profitable & growing</div><div class="option-sublabel">In the black and looking to scale</div></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" style="visibility:hidden;">← Back</button>
+      <button class="btn-next" id="next1" onclick="goTo(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ========== Q2: Team Size ========== -->
+  <div class="question-screen" id="q2">
+    <div class="question-number">02 / 04</div>
+    <div class="question-text">Who's in your corner?</div>
+    <div class="question-hint">How does your team look right now?</div>
+    <div class="options" id="options2">
+      <div class="option" onclick="select(this, 2)">
+        <span class="option-emoji">🧍‍♀️</span>
+        <div><div class="option-label">Just me</div><div class="option-sublabel">Wearing all the hats</div></div>
+      </div>
+      <div class="option" onclick="select(this, 2)">
+        <span class="option-emoji">👯‍♀️</span>
+        <div><div class="option-label">Me + 1–2 people</div><div class="option-sublabel">A small but mighty crew</div></div>
+      </div>
+      <div class="option" onclick="select(this, 2)">
+        <span class="option-emoji">👥</span>
+        <div><div class="option-label">3–5 people</div><div class="option-sublabel">Starting to build out the team</div></div>
+      </div>
+      <div class="option" onclick="select(this, 2)">
+        <span class="option-emoji">🏢</span>
+        <div><div class="option-label">6+ people</div><div class="option-sublabel">A proper team is in place</div></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(1)">← Back</button>
+      <button class="btn-next" id="next2" onclick="goTo(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ========== Q3: Favourite Part (multi-select) ========== -->
+  <div class="question-screen" id="q3">
+    <div class="question-number">03 / 04</div>
+    <div class="question-text">What's the fun part for you?</div>
+    <div class="question-hint">Pick everything that actually energises you. (Yes, more than one.)</div>
+    <div class="options" id="options3">
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">📱</span>
+        <div><div class="option-label">Social media & content</div><div class="option-sublabel">The captions, the reels, all of it</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">🎨</span>
+        <div><div class="option-label">The actual design</div><div class="option-sublabel">Clothes, jewellery, accessories — the product itself</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">📈</span>
+        <div><div class="option-label">Business development</div><div class="option-sublabel">Trade shows, pop-ups, big picture growth ideas</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">📦</span>
+        <div><div class="option-label">Operations</div><div class="option-sublabel">Packing orders, shipping, quality checks</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">🧵</span>
+        <div><div class="option-label">Production</div><div class="option-sublabel">Working with kaarigars, artisans & factories</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 3)">
+        <span class="option-emoji">📸</span>
+        <div><div class="option-label">Photoshoots & creative direction</div><div class="option-sublabel">Telling the story behind the brand visually</div></div>
+      </div>
+      <div class="option other-option" onclick="selectMultiOther(this, 3)">
+        <div class="other-top">
+          <span class="option-emoji">✏️</span>
+          <div><div class="option-label">Anything else</div><div class="option-sublabel">Something not on this list?</div></div>
+        </div>
+        <input type="text" class="other-input" id="other3" placeholder="Tell me..." onclick="event.stopPropagation()" />
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(2)">← Back</button>
+      <button class="btn-next" id="next3" onclick="goTo(4)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ========== Q4: Biggest Challenge (multi-select) ========== -->
+  <div class="question-screen" id="q4">
+    <div class="question-number">04 / 04</div>
+    <div class="question-text">Now the real talk — what keeps you up at night?</div>
+    <div class="question-hint">Pick everything that feels like a roadblock. (More than one is fine.)</div>
+    <div class="options" id="options4">
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">💸</span>
+        <div><div class="option-label">Growing sales & revenue</div><div class="option-sublabel">Making money is the goal, but it's not easy</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">📣</span>
+        <div><div class="option-label">Getting seen — marketing & visibility</div><div class="option-sublabel">The brand exists, but nobody knows about it yet</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">🧩</span>
+        <div><div class="option-label">Juggling everything — ops & time</div><div class="option-sublabel">There's just too much to do and not enough hours</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">👤</span>
+        <div><div class="option-label">Understanding my customer better</div><div class="option-sublabel">Who are they really? What do they actually want?</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">🏆</span>
+        <div><div class="option-label">Competitors & standing out</div><div class="option-sublabel">Everyone's doing the same thing — how do I feel different?</div></div>
+      </div>
+      <div class="option" onclick="selectMulti(this, 4)">
+        <span class="option-emoji">🤳</span>
+        <div><div class="option-label">Should I start posting myself as a founder?</div><div class="option-sublabel">The whole "put yourself out there" thing feels scary</div></div>
+      </div>
+      <div class="option other-option" onclick="selectMultiOther(this, 4)">
+        <div class="other-top">
+          <span class="option-emoji">✏️</span>
+          <div><div class="option-label">Something else</div><div class="option-sublabel">None of the above? Tell me.</div></div>
+        </div>
+        <input type="text" class="other-input" id="other4" placeholder="Tell me..." onclick="event.stopPropagation()" />
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn-back" onclick="goTo(3)">← Back</button>
+      <button class="btn-next" id="next4" onclick="submitForm()">Submit</button>
+    </div>
+  </div>
+
+  <!-- ========== THANK YOU ========== -->
+  <div class="thankyou-screen" id="thankyouScreen">
+    <div class="checkmark">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="deco-line"></div>
+    <h2>Thank you so much 🌸</h2>
+    <p>This means a lot. I'm putting together something that's actually going to help founders like you — and your answers are shaping it. Stay tuned.</p>
+  </div>
+
+</div><!-- /wrapper -->
+
+<script>
+  // ============================================================
+  // PASTE YOUR GOOGLE APPS SCRIPT URL HERE (see instructions)
+  // ============================================================
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_Nct1UtJKmAVvB6lgfdWeUdpYGoSY-nsCMYQoYWU338EHo0EfbmBnlv15vgzRqIGp/exec";
+  // ============================================================
+
+  const totalQuestions = 4;
+
+  function updateProgress(step) {
+    const pct = (step / (totalQuestions + 1)) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function hideAll() {
+    document.getElementById('introScreen').style.display = 'none';
+    for (let i = 1; i <= totalQuestions; i++) {
+      document.getElementById('q' + i).classList.remove('active');
+    }
+    document.getElementById('thankyouScreen').classList.remove('active');
+  }
+
+  function startQuiz() {
+    hideAll();
+    document.getElementById('q1').classList.add('active');
+    updateProgress(1);
+  }
+
+  function goTo(n) {
+    hideAll();
+    document.getElementById('q' + n).classList.add('active');
+    updateProgress(n);
+    const el = document.getElementById('q' + n);
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  }
+
+  function goToThanks() {
+    hideAll();
+    document.getElementById('thankyouScreen').classList.add('active');
+    updateProgress(totalQuestions + 1);
+  }
+
+  // Single select
+  function select(el, qNum) {
+    const container = document.getElementById('options' + qNum);
+    container.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('next' + qNum).classList.add('enabled');
+  }
+
+  // Multi select
+  function selectMulti(el, qNum) {
+    el.classList.toggle('selected');
+    const container = document.getElementById('options' + qNum);
+    const anySelected = container.querySelector('.option.selected');
+    const btn = document.getElementById('next' + qNum);
+    btn.classList.toggle('enabled', !!anySelected);
+  }
+
+  // Multi select — "other" option (has a text input inside)
+  function selectMultiOther(el, qNum) {
+    el.classList.toggle('selected');
+    const container = document.getElementById('options' + qNum);
+    const anySelected = container.querySelector('.option.selected');
+    const btn = document.getElementById('next' + qNum);
+    btn.classList.toggle('enabled', !!anySelected);
+    // Focus the input when selected
+    if (el.classList.contains('selected')) {
+      document.getElementById('other' + qNum).focus();
+    }
+  }
+
+  // ============================================================
+  // COLLECT ANSWERS & SUBMIT TO GOOGLE SHEETS
+  // ============================================================
+  function getSelectedAnswer(qNum) {
+    const container = document.getElementById('options' + qNum);
+    const selected = container.querySelector('.option.selected .option-label');
+    return selected ? selected.textContent.trim() : '';
+  }
+
+  function getMultiAnswers(qNum) {
+    const container = document.getElementById('options' + qNum);
+    const selected = container.querySelectorAll('.option.selected');
+    const answers = [];
+    selected.forEach(el => {
+      const label = el.querySelector('.option-label');
+      const otherInput = el.querySelector('.other-input');
+      if (otherInput) {
+        // It's the "other" option — use typed text if available, otherwise skip
+        const typed = otherInput.value.trim();
+        if (typed) answers.push('Other: ' + typed);
+      } else {
+        if (label) answers.push(label.textContent.trim());
+      }
+    });
+    return answers.join(', ');
+  }
+
+  function submitForm() {
+    const btn = document.getElementById('next4');
+    btn.classList.add('loading');
+    btn.textContent = 'Sending';
+
+    const answers = {
+      timestamp: new Date().toISOString(),
+      q1_business_stage: getSelectedAnswer(1),
+      q2_team_size: getSelectedAnswer(2),
+      q3_fun_parts: getMultiAnswers(3),
+      q4_biggest_challenge: getMultiAnswers(4)
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(answers)
+    })
+    .then(response => {
+      goToThanks();
+    })
+    .catch(error => {
+      // If Google Sheets fails, still show thank you — don't punish the user
+      console.error('Submission error:', error);
+      goToThanks();
+    });
+  }
+</script>
+</body>
+</html>
