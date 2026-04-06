@@ -287,7 +287,26 @@
   .option.other-option.selected .other-input::placeholder {
     color: rgba(255,253,249,0.5);
   }
-
+.text-input {
+  width: 100%;
+  padding: 16px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.25s;
+}
+.text-input:focus {
+  border-color: var(--accent);
+}
+.text-input::placeholder {
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+  
   /* Navigation */
   .nav {
     display: flex;
@@ -572,7 +591,7 @@
     </div>
     <div class="nav">
       <button class="btn-back" onclick="goTo(3)">← Back</button>
-      <button class="btn-next" id="next4" onclick="submitForm()">Submit</button>
+     <button class="btn-next" id="next4" onclick="goTo(5)">Next →</button>
     </div>
   </div>
 <!-- ========== Q5: Stay in the loop (optional) ========== -->
@@ -609,7 +628,7 @@
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvAbW777ZQn_8QUcDjJ0TqxTGd_V2N0VPfRfCOjFqHEbgwlBkqiqQ9aV3aXbaLkCtZ/exec";
   // ============================================================
 
-  const totalQuestions = 4;
+  const totalQuestions = 5;
 
   function updateProgress(step) {
     const pct = (step / (totalQuestions + 1)) * 100;
@@ -704,17 +723,19 @@
   }
 
   function submitForm() {
-    const btn = document.getElementById('next4');
+    const btn = document.getElementById('next5');
     btn.classList.add('loading');
     btn.textContent = 'Sending';
 
-    const answers = {
-      timestamp: new Date().toISOString(),
-      q1_business_stage: getSelectedAnswer(1),
-      q2_team_size: getSelectedAnswer(2),
-      q3_fun_parts: getMultiAnswers(3),
-      q4_biggest_challenge: getMultiAnswers(4)
-    };
+   const answers = {
+  timestamp: new Date().toISOString(),
+  q1_business_stage: getSelectedAnswer(1),
+  q2_team_size: getSelectedAnswer(2),
+  q3_fun_parts: getMultiAnswers(3),
+  q4_biggest_challenge: getMultiAnswers(4),
+  name: document.getElementById('input_name').value.trim(),
+  contact: document.getElementById('input_contact').value.trim()
+};
 
     // Use a hidden form to bypass CORS
     const form = document.createElement('form');
