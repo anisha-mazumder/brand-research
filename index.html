@@ -410,6 +410,38 @@
     font-weight: 300;
   }
 
+/* Social Links */
+  .social-links {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 30px;
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.25s ease;
+  letter-spacing: 0.5px;
+}
+.social-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.social-link svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+}
   /* Decorative line accent */
   .deco-line {
     width: 40px;
@@ -618,7 +650,20 @@
     <div class="deco-line"></div>
     <h2>Thank you so much 🌸</h2>
     <p>This means a lot. I'm putting together something that's actually going to help founders like you — and your answers are shaping it. Stay tuned.</p>
-  </div>
+    <div class="social-links">
+  <a href="https://www.linkedin.com/in/anisha-mazumder/" target="_blank" class="social-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+    LinkedIn
+  </a>
+  <a href="https://www.instagram.com/anisha.mazumder/" target="_blank" class="social-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+    Instagram
+  </a>
+  <a href="mailto:hello@anishamazumder.com" class="social-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+    Email me
+  </a>
+</div>
 
 </div><!-- /wrapper -->
 
